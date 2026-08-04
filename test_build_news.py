@@ -1,6 +1,8 @@
 import textwrap
 from pathlib import Path
 
+import pytest
+
 from build_news import parse_note, classify_category, render_article_html, extract_summary, build_html, generate_site
 
 
@@ -54,9 +56,26 @@ def test_parse_note_block_tags_list_and_explicit_category(tmp_path):
     assert note["category"] == "epigenetics"
 
 
+def test_parse_note_missing_closing_delimiter_raises_value_error(tmp_path):
+    path = tmp_path / "broken_精読ノート.md"
+    path.write_text(
+        '---\ntitle: "タイトル"\n\n本文のみで閉じデリミタなし\n', encoding="utf-8"
+    )
+
+    with pytest.raises(ValueError, match="frontmatter closing '---' not found"):
+        parse_note(path)
+
+
 def test_classify_category_manual_override():
     note = {"title": "何か", "journal": "", "type": "", "tags": [], "category": "psychiatry"}
     assert classify_category(note) == ("psychiatry", "manual")
+
+
+def test_classify_category_unknown_manual_value_falls_back_to_unclassified(capsys):
+    note = {"title": "何か", "journal": "", "type": "", "tags": [], "category": "wellbeing"}
+    assert classify_category(note) == ("unclassified", "auto")
+    captured = capsys.readouterr()
+    assert "unknown category 'wellbeing'" in captured.out
 
 
 def test_classify_category_auto_epigenetics():
@@ -102,6 +121,28 @@ def test_extract_summary_strips_markdown_and_truncates():
     assert summary.startswith("あ")
 
 
+def test_render_article_html_strips_leading_h1():
+    body_md = "# タイトル 精読ノート\n\n## 概要\n\n本文です。"
+    html = render_article_html(body_md)
+    assert "<h1>" not in html
+    assert "タイトル 精読ノート" not in html
+    assert "<h2>概要</h2>" in html
+    assert "本文です" in html
+
+
+def test_extract_summary_skips_blockquote_role_statement():
+    body_md = (
+        "# タイトル 精読ノート\n\n"
+        "> 役割：サイエンスコミュニケーターとしての精読プロンプトに基づく分析結果\n\n"
+        "## 1. 概要（500字以内）\n\n"
+        "実際の概要テキストがここから始まります。"
+    )
+    summary = extract_summary(body_md, length=50)
+    assert summary.startswith("実際の概要テキストがここから始まります")
+    assert "役割" not in summary
+    assert "サイエンスコミュニケーター" not in summary
+
+
 def _sample_article(article_id, title, category):
     return {
         "id": article_id,
@@ -137,6 +178,13 @@ def test_build_html_shows_unclassified_tab_when_present():
     assert "未分類" in html
 
 
+def test_build_html_escapes_closing_script_tag_in_body():
+    article = _sample_article("a1", "記事タイトル1", "epigenetics")
+    article["body_html"] = "<p>危険な文字列</script><script>alert(1)</script></p>"
+    html = build_html([article])
+    assert "</script><script>alert(1)" not in html
+
+
 def test_generate_site_creates_index_html(tmp_path, capsys):
     _write_note(
         tmp_path,
@@ -161,3 +209,19 @@ def test_generate_site_creates_index_html(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "[manual]" in captured.out
     assert "[auto]" in captured.out
+
+
+def test_generate_site_excludes_body_md_and_source_from_json(tmp_path):
+    _write_note(
+        tmp_path,
+        "note1_精読ノート.md",
+        'title: "テスト論文1"\nsource: "secret-source-marker.pdf"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
+        "\n## 概要\n\nsecret-body-marker\n",
+    )
+
+    output_path = generate_site(tmp_path)
+    html = output_path.read_text(encoding="utf-8")
+
+    assert "secret-source-marker.pdf" not in html
+    # body_md自体はJSONに含めないが、レンダリング済みのbody_htmlには本文が残る
+    assert "secret-body-marker" in html

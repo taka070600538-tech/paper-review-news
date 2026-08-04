@@ -49,9 +49,12 @@ def parse_note(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
     lines = text.split("\n")
     assert lines[0].strip() == FRONTMATTER_DELIM, f"frontmatter not found in {path}"
-    end_idx = next(
-        i for i in range(1, len(lines)) if lines[i].strip() == FRONTMATTER_DELIM
-    )
+    try:
+        end_idx = next(
+            i for i in range(1, len(lines)) if lines[i].strip() == FRONTMATTER_DELIM
+        )
+    except StopIteration:
+        raise ValueError(f"frontmatter closing '---' not found in {path}")
     frontmatter_text = "\n".join(lines[1:end_idx])
     body_md = "\n".join(lines[end_idx + 1 :]).strip("\n")
 
@@ -73,8 +76,15 @@ def parse_note(path: Path) -> dict:
 
 
 def classify_category(note: dict) -> tuple[str, str]:
-    if note.get("category"):
-        return note["category"], "manual"
+    valid_ids = {cat_id for cat_id, _ in CATEGORIES}
+    category = note.get("category")
+    if category:
+        if category in valid_ids:
+            return category, "manual"
+        print(
+            f"[warning] unknown category '{category}' in note, falling back to unclassified"
+        )
+        return "unclassified", "auto"
 
     haystack = " ".join(
         [note.get("title", ""), note.get("journal", ""), note.get("type", "")]
@@ -96,11 +106,14 @@ def classify_category(note: dict) -> tuple[str, str]:
 
 
 def render_article_html(body_md: str) -> str:
+    # 本文冒頭のレベル1見出し（# タイトル）は詳細ビューの<h1>と重複するため除去する。
+    body_md = re.sub(r"\A\s*#(?!#)[ \t]+[^\n]*\n?", "", body_md)
     return markdown_lib.markdown(body_md, extensions=["tables"])
 
 
 def extract_summary(body_md: str, length: int = 100) -> str:
     plain = re.sub(r"^#{1,6}\s*.*$", "", body_md, flags=re.MULTILINE)
+    plain = re.sub(r"^>\s*.*$", "", plain, flags=re.MULTILINE)
     plain = re.sub(r"[#*>`\-]", "", plain)
     plain = re.sub(r"\s+", "", plain).strip()
     if len(plain) <= length:
@@ -113,7 +126,8 @@ def build_html(articles: list[dict]) -> str:
     if any(a["category"] == "unclassified" for a in articles):
         categories = categories + [("unclassified", "未分類")]
 
-    articles_json = json.dumps(articles, ensure_ascii=False)
+    # </script> のような文字列が本文に含まれていてもscriptタグが早期終了しないようにする。
+    articles_json = json.dumps(articles, ensure_ascii=False).replace("</", "<\\/")
     tabs_html = "\n".join(
         f'<button class="tab" data-category="{cat_id}">{label}</button>'
         for cat_id, label in categories
@@ -123,6 +137,7 @@ def build_html(articles: list[dict]) -> str:
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>論文精読ニュース</title>
 <style>
   :root {{ color-scheme: light dark; }}
@@ -132,10 +147,14 @@ def build_html(articles: list[dict]) -> str:
   .tab.active {{ background: #2563eb; color: white; border-color: #2563eb; }}
   .card {{ border: 1px solid #ccc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; cursor: pointer; }}
   .card:hover {{ background: rgba(37,99,235,0.06); }}
-  .badge {{ display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eee; margin-right: 0.4rem; }}
+  .badge {{ display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eee; color: #333; border: 1px solid #ccc; margin-right: 0.4rem; }}
   .hidden {{ display: none; }}
   #backBtn {{ margin-bottom: 1rem; cursor: pointer; }}
   .tags span {{ font-size: 0.75rem; color: #666; margin-right: 0.5rem; }}
+  @media (prefers-color-scheme: dark) {{
+    .badge {{ background: #444; color: #eee; border-color: #666; }}
+    .tags span {{ color: #aaa; }}
+  }}
 </style>
 </head>
 <body>
@@ -213,7 +232,12 @@ def generate_site(folder: Path) -> Path:
         articles.append(note)
         print(f"[{method}] {path.name} -> {category}")
 
-    html = build_html(articles)
+    # body_md/source はJS側で参照されず、特にbody_mdはサイズが大きいためJSONには含めない。
+    json_articles = [
+        {k: v for k, v in article.items() if k not in ("body_md", "source")}
+        for article in articles
+    ]
+    html = build_html(json_articles)
     output_path = folder / "index.html"
     output_path.write_text(html, encoding="utf-8")
     print(f"Generated: {output_path}")
