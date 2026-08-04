@@ -1,7 +1,7 @@
 import textwrap
 from pathlib import Path
 
-from build_news import parse_note, classify_category, render_article_html, extract_summary, build_html
+from build_news import parse_note, classify_category, render_article_html, extract_summary, build_html, generate_site
 
 
 def _write_note(tmp_path: Path, name: str, frontmatter: str, body: str) -> Path:
@@ -135,3 +135,29 @@ def test_build_html_shows_unclassified_tab_when_present():
     articles = [_sample_article("a1", "記事タイトル1", "unclassified")]
     html = build_html(articles)
     assert "未分類" in html
+
+
+def test_generate_site_creates_index_html(tmp_path, capsys):
+    _write_note(
+        tmp_path,
+        "note1_精読ノート.md",
+        'title: "テスト論文1"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
+        "\n## 概要\n\n本文1\n",
+    )
+    _write_note(
+        tmp_path,
+        "note2_精読ノート.md",
+        'title: "テスト論文2"\njournal: "J2"\nauthors: "B"\ntype: "総説"\ntags: [epigenetics, methylation]\n',
+        "\n## 概要\n\n本文2\n",
+    )
+
+    output_path = generate_site(tmp_path)
+
+    assert output_path == tmp_path / "index.html"
+    html = output_path.read_text(encoding="utf-8")
+    assert "テスト論文1" in html
+    assert "テスト論文2" in html
+
+    captured = capsys.readouterr()
+    assert "[manual]" in captured.out
+    assert "[auto]" in captured.out

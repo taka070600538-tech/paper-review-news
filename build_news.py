@@ -198,3 +198,31 @@ if (currentCategory) {{
 </script>
 </body>
 </html>"""
+
+
+def generate_site(folder: Path) -> Path:
+    note_paths = sorted(folder.glob("*_精読ノート.md"))
+    articles = []
+    for path in note_paths:
+        note = parse_note(path)
+        category, method = classify_category(note)
+        note["category"] = category
+        note["id"] = path.stem
+        note["body_html"] = render_article_html(note["body_md"])
+        note["summary"] = extract_summary(note["body_md"])
+        articles.append(note)
+        print(f"[{method}] {path.name} -> {category}")
+
+    html = build_html(articles)
+    output_path = folder / "index.html"
+    output_path.write_text(html, encoding="utf-8")
+    print(f"Generated: {output_path}")
+    return output_path
+
+
+def main():
+    generate_site(Path(__file__).resolve().parent)
+
+
+if __name__ == "__main__":
+    main()
