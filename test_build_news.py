@@ -1,7 +1,7 @@
 import textwrap
 from pathlib import Path
 
-from build_news import parse_note
+from build_news import parse_note, classify_category
 
 
 def _write_note(tmp_path: Path, name: str, frontmatter: str, body: str) -> Path:
@@ -52,3 +52,35 @@ def test_parse_note_block_tags_list_and_explicit_category(tmp_path):
 
     assert note["tags"] == ["論文精読", "エピジェネティクス"]
     assert note["category"] == "epigenetics"
+
+
+def test_classify_category_manual_override():
+    note = {"title": "何か", "journal": "", "type": "", "tags": [], "category": "psychiatry"}
+    assert classify_category(note) == ("psychiatry", "manual")
+
+
+def test_classify_category_auto_epigenetics():
+    note = {
+        "title": "Epigenetics of Alzheimer's Disease",
+        "journal": "Biomolecules",
+        "type": "レビュー論文",
+        "tags": ["精読", "epigenetics", "DNAメチル化", "ヒストン修飾", "miRNA"],
+        "category": None,
+    }
+    assert classify_category(note) == ("epigenetics", "auto")
+
+
+def test_classify_category_auto_wellbeing():
+    note = {
+        "title": "Longitudinal associations of dispositional forgivingness with multidimensional wellbeing",
+        "journal": "npj Mental Health Research",
+        "type": "原著研究",
+        "tags": ["精読", "forgiveness", "well-being", "GlobalFlourishingStudy"],
+        "category": None,
+    }
+    assert classify_category(note) == ("well-being", "auto")
+
+
+def test_classify_category_no_match_is_unclassified():
+    note = {"title": "無関係なタイトル", "journal": "", "type": "", "tags": [], "category": None}
+    assert classify_category(note) == ("unclassified", "auto")

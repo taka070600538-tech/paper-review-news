@@ -4,6 +4,43 @@ import yaml
 
 FRONTMATTER_DELIM = "---"
 
+CATEGORIES: list[tuple[str, str]] = [
+    ("psychiatry", "精神医学"),
+    ("epigenetics", "エピジェネティクス"),
+    ("well-being", "ウェルビーイング"),
+    ("cbt", "認知行動療法"),
+    ("psychopharmacology", "精神薬理学"),
+]
+
+CATEGORY_KEYWORDS: dict[str, list[str]] = {
+    "psychiatry": [
+        "psychiatry", "psychiatric", "精神医学", "精神科", "精神疾患", "精神障害",
+        "schizophrenia", "統合失調症", "depression", "うつ病", "bipolar", "双極性",
+        "anxiety disorder", "不安障害", "ptsd", "adhd", "autism", "自閉症",
+    ],
+    "epigenetics": [
+        "epigenetic", "epigenetics", "エピジェネティクス", "methylation", "メチル化",
+        "histone", "ヒストン", "mirna", "microrna", "ncrna", "non-coding rna",
+        "mitoepigenetics", "chromatin", "クロマチン",
+    ],
+    "well-being": [
+        "well-being", "wellbeing", "ウェルビーイング", "flourishing", "happiness",
+        "幸福", "forgiveness", "許し", "life satisfaction", "人生満足度",
+        "positive psychology", "ポジティブ心理学", "resilience", "レジリエンス",
+    ],
+    "cbt": [
+        "cognitive behavioral therapy", "cognitive therapy", "cbt", "認知行動療法",
+        "認知療法", "schema therapy", "スキーマ療法", "automatic thoughts", "自動思考",
+        "cognitive restructuring", "認知再構成",
+    ],
+    "psychopharmacology": [
+        "pharmacology", "psychopharmacology", "薬理学", "薬理", "精神薬理",
+        "antidepressant", "抗うつ薬", "antipsychotic", "抗精神病薬", "ssri", "snri",
+        "benzodiazepine", "ベンゾジアゼピン", "pharmacokinetics", "薬物動態",
+        "drug interaction", "薬物相互作用",
+    ],
+}
+
 
 def parse_note(path: Path) -> dict:
     text = path.read_text(encoding="utf-8")
@@ -30,3 +67,26 @@ def parse_note(path: Path) -> dict:
         "category": meta.get("category"),
         "body_md": body_md,
     }
+
+
+def classify_category(note: dict) -> tuple[str, str]:
+    if note.get("category"):
+        return note["category"], "manual"
+
+    haystack = " ".join(
+        [note.get("title", ""), note.get("journal", ""), note.get("type", "")]
+        + note.get("tags", [])
+    ).lower()
+
+    scores = {
+        cat_id: sum(1 for kw in keywords if kw.lower() in haystack)
+        for cat_id, keywords in CATEGORY_KEYWORDS.items()
+    }
+    max_score = max(scores.values())
+    if max_score == 0:
+        return "unclassified", "auto"
+
+    top = [cat_id for cat_id, score in scores.items() if score == max_score]
+    if len(top) > 1:
+        return "unclassified", "auto"
+    return top[0], "auto"
