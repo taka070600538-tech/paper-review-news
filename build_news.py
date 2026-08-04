@@ -1,5 +1,7 @@
+import re
 from pathlib import Path
 
+import markdown as markdown_lib
 import yaml
 
 FRONTMATTER_DELIM = "---"
@@ -90,3 +92,16 @@ def classify_category(note: dict) -> tuple[str, str]:
     if len(top) > 1:
         return "unclassified", "auto"
     return top[0], "auto"
+
+
+def render_article_html(body_md: str) -> str:
+    return markdown_lib.markdown(body_md, extensions=["tables"])
+
+
+def extract_summary(body_md: str, length: int = 100) -> str:
+    plain = re.sub(r"^#{1,6}\s*.*$", "", body_md, flags=re.MULTILINE)
+    plain = re.sub(r"[#*>`\-]", "", plain)
+    plain = re.sub(r"\s+", "", plain).strip()
+    if len(plain) <= length:
+        return plain
+    return plain[:length] + "..."

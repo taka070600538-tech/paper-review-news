@@ -1,7 +1,7 @@
 import textwrap
 from pathlib import Path
 
-from build_news import parse_note, classify_category
+from build_news import parse_note, classify_category, render_article_html, extract_summary
 
 
 def _write_note(tmp_path: Path, name: str, frontmatter: str, body: str) -> Path:
@@ -84,3 +84,19 @@ def test_classify_category_auto_wellbeing():
 def test_classify_category_no_match_is_unclassified():
     note = {"title": "無関係なタイトル", "journal": "", "type": "", "tags": [], "category": None}
     assert classify_category(note) == ("unclassified", "auto")
+
+
+def test_render_article_html_converts_headings_and_bold():
+    body_md = "## 概要（500字以内）\n\nこれは**重要**な内容です。\n\n### Table 1\n表の説明。"
+    html = render_article_html(body_md)
+    assert "<h2>" in html
+    assert "<h3>" in html
+    assert "<strong>重要</strong>" in html
+
+
+def test_extract_summary_strips_markdown_and_truncates():
+    body_md = "## 概要（500字以内）\n\n" + "あ" * 200
+    summary = extract_summary(body_md, length=50)
+    assert "##" not in summary
+    assert len(summary) <= 53  # 50文字 + "..."
+    assert summary.startswith("あ")
