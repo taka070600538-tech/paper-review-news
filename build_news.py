@@ -15,6 +15,9 @@ CATEGORIES: list[tuple[str, str]] = [
     ("psychopharmacology", "精神薬理学"),
 ]
 
+SUBCATEGORIES: list[str] = ["重要論文解説", "管理者のノート"]
+DEFAULT_SUBCATEGORY = "重要論文解説"
+
 CATEGORY_KEYWORDS: dict[str, list[str]] = {
     "psychiatry": [
         "psychiatry", "psychiatric", "精神医学", "精神科", "精神疾患", "精神障害",
@@ -63,6 +66,17 @@ def parse_note(path: Path) -> dict:
     if isinstance(tags, str):
         tags = [t.strip() for t in tags.split(",") if t.strip()]
 
+    subcategory = meta.get("subcategory")
+    if subcategory and subcategory in SUBCATEGORIES:
+        pass
+    elif subcategory:
+        print(
+            f"[warning] unknown subcategory '{subcategory}' in note, falling back to '{DEFAULT_SUBCATEGORY}'"
+        )
+        subcategory = DEFAULT_SUBCATEGORY
+    else:
+        subcategory = DEFAULT_SUBCATEGORY
+
     return {
         "title": str(meta.get("title", "")).strip(),
         "source": str(meta.get("source", "")).strip(),
@@ -71,6 +85,7 @@ def parse_note(path: Path) -> dict:
         "type": str(meta.get("type", "")).strip(),
         "tags": [str(t) for t in tags],
         "category": meta.get("category"),
+        "subcategory": subcategory,
         "body_md": body_md,
     }
 
@@ -132,6 +147,9 @@ def build_html(articles: list[dict]) -> str:
         f'<button class="tab" data-category="{cat_id}">{label}</button>'
         for cat_id, label in categories
     )
+    subcategory_options_html = "\n".join(
+        f'<option value="{sub}">{sub}</option>' for sub in SUBCATEGORIES
+    )
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -142,9 +160,11 @@ def build_html(articles: list[dict]) -> str:
 <style>
   :root {{ color-scheme: light dark; }}
   body {{ font-family: system-ui, "Hiragino Sans", sans-serif; max-width: 860px; margin: 0 auto; padding: 1.5rem; line-height: 1.7; }}
-  .tabs {{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }}
+  .tabs {{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }}
   .tab {{ padding: 0.5rem 1rem; border: 1px solid #888; border-radius: 999px; background: transparent; cursor: pointer; font-size: 0.95rem; }}
   .tab.active {{ background: #2563eb; color: white; border-color: #2563eb; }}
+  .subcategory-bar {{ margin-bottom: 1.5rem; }}
+  #subcategorySelect {{ padding: 0.4rem 0.6rem; font-size: 0.9rem; border-radius: 6px; border: 1px solid #888; background: transparent; color: inherit; }}
   .headline-list {{ display: flex; flex-direction: column; }}
   .headline {{ display: block; padding: 0.6rem 0.2rem; border-bottom: 1px solid #ddd; color: #06c; text-decoration: none; font-size: 1rem; }}
   .headline:hover {{ text-decoration: underline; background: rgba(37,99,235,0.06); }}
@@ -164,6 +184,12 @@ def build_html(articles: list[dict]) -> str:
 <body>
 <h1>論文精読ニュース</h1>
 <div class="tabs">{tabs_html}</div>
+<div class="subcategory-bar">
+  <select id="subcategorySelect">
+    <option value="all">すべて</option>
+    {subcategory_options_html}
+  </select>
+</div>
 <div id="listView"></div>
 <div id="detailView" class="hidden">
   <button id="backBtn">&larr; 一覧に戻る</button>
@@ -172,11 +198,12 @@ def build_html(articles: list[dict]) -> str:
 <script>
 const articles = {articles_json};
 let currentCategory = articles.length ? (articles.find(a => a.category) || articles[0]).category : null;
+let currentSubcategory = 'all';
 
 function renderList(category) {{
   currentCategory = category;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
-  const list = articles.filter(a => a.category === category);
+  const list = articles.filter(a => a.category === category && (currentSubcategory === 'all' || a.subcategory === currentSubcategory));
   const listView = document.getElementById('listView');
   listView.innerHTML = `<div class="headline-list">${{list.map(a => `
     <a href="#" class="headline" data-id="${{a.id}}">${{a.title}}</a>
@@ -204,6 +231,10 @@ function showDetail(id) {{
 
 document.querySelectorAll('.tab').forEach(t => {{
   t.addEventListener('click', () => renderList(t.dataset.category));
+}});
+document.getElementById('subcategorySelect').addEventListener('change', (e) => {{
+  currentSubcategory = e.target.value;
+  renderList(currentCategory);
 }});
 document.getElementById('backBtn').addEventListener('click', () => renderList(currentCategory));
 

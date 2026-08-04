@@ -56,6 +56,61 @@ def test_parse_note_block_tags_list_and_explicit_category(tmp_path):
     assert note["category"] == "epigenetics"
 
 
+def test_parse_note_subcategory_defaults_to_important_paper(tmp_path):
+    frontmatter = textwrap.dedent("""\
+        title: "サンプル3 精読ノート"
+        source: "sample3.pdf"
+        journal: "Sample Journal 3"
+        authors: "Dave"
+        type: "原著研究"
+        tags: [精読]
+        """)
+    body = "\n## 概要\n\n内容\n"
+    path = _write_note(tmp_path, "sample3_精読ノート.md", frontmatter, body)
+
+    note = parse_note(path)
+
+    assert note["subcategory"] == "重要論文解説"
+
+
+def test_parse_note_subcategory_explicit_value(tmp_path):
+    frontmatter = textwrap.dedent("""\
+        title: "サンプル4 精読ノート"
+        source: "sample4.pdf"
+        journal: "Sample Journal 4"
+        authors: "Eve"
+        type: "原著研究"
+        subcategory: 管理者のノート
+        tags: [精読]
+        """)
+    body = "\n## 概要\n\n内容\n"
+    path = _write_note(tmp_path, "sample4_精読ノート.md", frontmatter, body)
+
+    note = parse_note(path)
+
+    assert note["subcategory"] == "管理者のノート"
+
+
+def test_parse_note_unknown_subcategory_falls_back_with_warning(tmp_path, capsys):
+    frontmatter = textwrap.dedent("""\
+        title: "サンプル5 精読ノート"
+        source: "sample5.pdf"
+        journal: "Sample Journal 5"
+        authors: "Frank"
+        type: "原著研究"
+        subcategory: 存在しない分類
+        tags: [精読]
+        """)
+    body = "\n## 概要\n\n内容\n"
+    path = _write_note(tmp_path, "sample5_精読ノート.md", frontmatter, body)
+
+    note = parse_note(path)
+
+    assert note["subcategory"] == "重要論文解説"
+    captured = capsys.readouterr()
+    assert "unknown subcategory '存在しない分類'" in captured.out
+
+
 def test_parse_note_missing_closing_delimiter_raises_value_error(tmp_path):
     path = tmp_path / "broken_精読ノート.md"
     path.write_text(
@@ -170,6 +225,15 @@ def test_build_html_includes_category_tabs_and_articles():
     assert "記事タイトル1" in html
     assert "記事タイトル2" in html
     assert "未分類" not in html
+
+
+def test_build_html_includes_subcategory_dropdown():
+    articles = [_sample_article("a1", "記事タイトル1", "epigenetics")]
+    html = build_html(articles)
+
+    assert '<select id="subcategorySelect">' in html
+    assert '<option value="重要論文解説">重要論文解説</option>' in html
+    assert '<option value="管理者のノート">管理者のノート</option>' in html
 
 
 def test_build_html_shows_unclassified_tab_when_present():
