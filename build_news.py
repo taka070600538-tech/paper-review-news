@@ -16,7 +16,6 @@ CATEGORIES: list[tuple[str, str]] = [
 ]
 
 SUBCATEGORIES: list[str] = ["重要論文解説", "管理者のノート"]
-DEFAULT_SUBCATEGORY = "重要論文解説"
 
 CATEGORY_KEYWORDS: dict[str, list[str]] = {
     "psychiatry": [
@@ -66,17 +65,6 @@ def parse_note(path: Path) -> dict:
     if isinstance(tags, str):
         tags = [t.strip() for t in tags.split(",") if t.strip()]
 
-    subcategory = meta.get("subcategory")
-    if subcategory and subcategory in SUBCATEGORIES:
-        pass
-    elif subcategory:
-        print(
-            f"[warning] unknown subcategory '{subcategory}' in note, falling back to '{DEFAULT_SUBCATEGORY}'"
-        )
-        subcategory = DEFAULT_SUBCATEGORY
-    else:
-        subcategory = DEFAULT_SUBCATEGORY
-
     return {
         "title": str(meta.get("title", "")).strip(),
         "source": str(meta.get("source", "")).strip(),
@@ -85,7 +73,6 @@ def parse_note(path: Path) -> dict:
         "type": str(meta.get("type", "")).strip(),
         "tags": [str(t) for t in tags],
         "category": meta.get("category"),
-        "subcategory": subcategory,
         "body_md": body_md,
     }
 
@@ -249,17 +236,22 @@ if (currentCategory) {{
 
 
 def generate_site(folder: Path) -> Path:
-    note_paths = sorted(folder.glob("*_精読ノート.md"))
     articles = []
-    for path in note_paths:
-        note = parse_note(path)
-        category, method = classify_category(note)
-        note["category"] = category
-        note["id"] = path.stem
-        note["body_html"] = render_article_html(note["body_md"])
-        note["summary"] = extract_summary(note["body_md"])
-        articles.append(note)
-        print(f"[{method}] {path.name} -> {category}")
+    for subcategory in SUBCATEGORIES:
+        subfolder = folder / subcategory
+        if not subfolder.is_dir():
+            continue
+        note_paths = sorted(subfolder.glob("*.md"))
+        for path in note_paths:
+            note = parse_note(path)
+            note["subcategory"] = subcategory
+            category, method = classify_category(note)
+            note["category"] = category
+            note["id"] = path.stem
+            note["body_html"] = render_article_html(note["body_md"])
+            note["summary"] = extract_summary(note["body_md"])
+            articles.append(note)
+            print(f"[{method}] {subcategory}/{path.name} -> {category}")
 
     # body_md/source はJS側で参照されず、特にbody_mdはサイズが大きいためJSONには含めない。
     json_articles = [

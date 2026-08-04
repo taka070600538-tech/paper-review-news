@@ -6,9 +6,10 @@ import pytest
 from build_news import parse_note, classify_category, render_article_html, extract_summary, build_html, generate_site
 
 
-def _write_note(tmp_path: Path, name: str, frontmatter: str, body: str) -> Path:
+def _write_note(dir_path: Path, name: str, frontmatter: str, body: str) -> Path:
     content = f"---\n{frontmatter}\n---\n{body}"
-    path = tmp_path / name
+    dir_path.mkdir(parents=True, exist_ok=True)
+    path = dir_path / name
     path.write_text(content, encoding="utf-8")
     return path
 
@@ -56,59 +57,21 @@ def test_parse_note_block_tags_list_and_explicit_category(tmp_path):
     assert note["category"] == "epigenetics"
 
 
-def test_parse_note_subcategory_defaults_to_important_paper(tmp_path):
-    frontmatter = textwrap.dedent("""\
-        title: "サンプル3 精読ノート"
-        source: "sample3.pdf"
-        journal: "Sample Journal 3"
-        authors: "Dave"
-        type: "原著研究"
-        tags: [精読]
-        """)
-    body = "\n## 概要\n\n内容\n"
-    path = _write_note(tmp_path, "sample3_精読ノート.md", frontmatter, body)
+def test_parse_note_minimal_frontmatter_for_free_form_notes(tmp_path):
+    # 「管理者のノート」向けの自作ファイルはtitleと本文だけでよく、
+    # journal/authors/type/tagsは省略してもエラーにならず空値になる。
+    frontmatter = 'title: "自由メモ"'
+    body = "\n自由に書いた内容です。\n"
+    path = _write_note(tmp_path, "free_note.md", frontmatter, body)
 
     note = parse_note(path)
 
-    assert note["subcategory"] == "重要論文解説"
-
-
-def test_parse_note_subcategory_explicit_value(tmp_path):
-    frontmatter = textwrap.dedent("""\
-        title: "サンプル4 精読ノート"
-        source: "sample4.pdf"
-        journal: "Sample Journal 4"
-        authors: "Eve"
-        type: "原著研究"
-        subcategory: 管理者のノート
-        tags: [精読]
-        """)
-    body = "\n## 概要\n\n内容\n"
-    path = _write_note(tmp_path, "sample4_精読ノート.md", frontmatter, body)
-
-    note = parse_note(path)
-
-    assert note["subcategory"] == "管理者のノート"
-
-
-def test_parse_note_unknown_subcategory_falls_back_with_warning(tmp_path, capsys):
-    frontmatter = textwrap.dedent("""\
-        title: "サンプル5 精読ノート"
-        source: "sample5.pdf"
-        journal: "Sample Journal 5"
-        authors: "Frank"
-        type: "原著研究"
-        subcategory: 存在しない分類
-        tags: [精読]
-        """)
-    body = "\n## 概要\n\n内容\n"
-    path = _write_note(tmp_path, "sample5_精読ノート.md", frontmatter, body)
-
-    note = parse_note(path)
-
-    assert note["subcategory"] == "重要論文解説"
-    captured = capsys.readouterr()
-    assert "unknown subcategory '存在しない分類'" in captured.out
+    assert note["title"] == "自由メモ"
+    assert note["journal"] == ""
+    assert note["authors"] == ""
+    assert note["type"] == ""
+    assert note["tags"] == []
+    assert note["body_md"].strip() == "自由に書いた内容です。"
 
 
 def test_parse_note_missing_closing_delimiter_raises_value_error(tmp_path):
@@ -251,13 +214,13 @@ def test_build_html_escapes_closing_script_tag_in_body():
 
 def test_generate_site_creates_index_html(tmp_path, capsys):
     _write_note(
-        tmp_path,
+        tmp_path / "重要論文解説",
         "note1_精読ノート.md",
         'title: "テスト論文1"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
         "\n## 概要\n\n本文1\n",
     )
     _write_note(
-        tmp_path,
+        tmp_path / "重要論文解説",
         "note2_精読ノート.md",
         'title: "テスト論文2"\njournal: "J2"\nauthors: "B"\ntype: "総説"\ntags: [epigenetics, methylation]\n',
         "\n## 概要\n\n本文2\n",
@@ -277,7 +240,7 @@ def test_generate_site_creates_index_html(tmp_path, capsys):
 
 def test_generate_site_excludes_body_md_and_source_from_json(tmp_path):
     _write_note(
-        tmp_path,
+        tmp_path / "重要論文解説",
         "note1_精読ノート.md",
         'title: "テスト論文1"\nsource: "secret-source-marker.pdf"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
         "\n## 概要\n\nsecret-body-marker\n",
@@ -289,3 +252,39 @@ def test_generate_site_excludes_body_md_and_source_from_json(tmp_path):
     assert "secret-source-marker.pdf" not in html
     # body_md自体はJSONに含めないが、レンダリング済みのbody_htmlには本文が残る
     assert "secret-body-marker" in html
+
+
+def test_generate_site_assigns_subcategory_by_folder(tmp_path):
+    _write_note(
+        tmp_path / "重要論文解説",
+        "paper_note.md",
+        'title: "論文ノート"\ncategory: psychiatry\n',
+        "\n## 概要\n\n内容\n",
+    )
+    _write_note(
+        tmp_path / "管理者のノート",
+        "my_note.md",
+        'title: "自分のメモ"\ncategory: psychiatry\n',
+        "\n自由なメモ内容\n",
+    )
+
+    output_path = generate_site(tmp_path)
+    html = output_path.read_text(encoding="utf-8")
+
+    assert '"subcategory": "重要論文解説"' in html
+    assert '"subcategory": "管理者のノート"' in html
+
+
+def test_generate_site_skips_missing_subcategory_folder(tmp_path):
+    # 「管理者のノート」フォルダが存在しなくてもエラーにならない
+    _write_note(
+        tmp_path / "重要論文解説",
+        "paper_note.md",
+        'title: "論文ノート"\ncategory: psychiatry\n',
+        "\n## 概要\n\n内容\n",
+    )
+
+    output_path = generate_site(tmp_path)
+    html = output_path.read_text(encoding="utf-8")
+
+    assert "論文ノート" in html
