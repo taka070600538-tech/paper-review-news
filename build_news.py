@@ -145,8 +145,12 @@ def build_html(articles: list[dict]) -> str:
   .tabs {{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }}
   .tab {{ padding: 0.5rem 1rem; border: 1px solid #888; border-radius: 999px; background: transparent; cursor: pointer; font-size: 0.95rem; }}
   .tab.active {{ background: #2563eb; color: white; border-color: #2563eb; }}
-  .card {{ border: 1px solid #ccc; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; cursor: pointer; }}
-  .card:hover {{ background: rgba(37,99,235,0.06); }}
+  .headline-list {{ display: flex; flex-direction: column; }}
+  .headline {{ display: block; padding: 0.6rem 0.2rem; border-bottom: 1px solid #ddd; color: #06c; text-decoration: none; font-size: 1rem; }}
+  .headline:hover {{ text-decoration: underline; background: rgba(37,99,235,0.06); }}
+  @media (prefers-color-scheme: dark) {{
+    .headline {{ color: #6cf; border-color: #444; }}
+  }}
   .badge {{ display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eee; color: #333; border: 1px solid #ccc; margin-right: 0.4rem; }}
   .hidden {{ display: none; }}
   #backBtn {{ margin-bottom: 1rem; cursor: pointer; }}
@@ -174,17 +178,11 @@ function renderList(category) {{
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
   const list = articles.filter(a => a.category === category);
   const listView = document.getElementById('listView');
-  listView.innerHTML = list.map(a => `
-    <div class="card" data-id="${{a.id}}">
-      <span class="badge">${{a.type}}</span>
-      <h2>${{a.title}}</h2>
-      <p>${{a.journal}}</p>
-      <p>${{a.summary}}</p>
-      <div class="tags">${{a.tags.map(t => `<span>#${{t}}</span>`).join('')}}</div>
-    </div>
-  `).join('') || '<p>このカテゴリーの記事はまだありません。</p>';
-  document.querySelectorAll('.card').forEach(el => {{
-    el.addEventListener('click', () => showDetail(el.dataset.id));
+  listView.innerHTML = `<div class="headline-list">${{list.map(a => `
+    <a href="#" class="headline" data-id="${{a.id}}">${{a.title}}</a>
+  `).join('') || '<p>このカテゴリーの記事はまだありません。</p>'}}</div>`;
+  document.querySelectorAll('.headline').forEach(el => {{
+    el.addEventListener('click', (e) => {{ e.preventDefault(); showDetail(el.dataset.id); }});
   }});
   document.getElementById('listView').classList.remove('hidden');
   document.getElementById('detailView').classList.add('hidden');
