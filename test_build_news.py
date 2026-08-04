@@ -1,7 +1,7 @@
 import textwrap
 from pathlib import Path
 
-from build_news import parse_note, classify_category, render_article_html, extract_summary
+from build_news import parse_note, classify_category, render_article_html, extract_summary, build_html
 
 
 def _write_note(tmp_path: Path, name: str, frontmatter: str, body: str) -> Path:
@@ -100,3 +100,38 @@ def test_extract_summary_strips_markdown_and_truncates():
     assert "##" not in summary
     assert len(summary) <= 53  # 50文字 + "..."
     assert summary.startswith("あ")
+
+
+def _sample_article(article_id, title, category):
+    return {
+        "id": article_id,
+        "title": title,
+        "journal": "Journal X",
+        "type": "原著研究",
+        "authors": "Author A",
+        "tags": ["tag1", "tag2"],
+        "category": category,
+        "summary": "概要の抜粋テキスト",
+        "body_html": "<h2>概要</h2><p>本文</p>",
+    }
+
+
+def test_build_html_includes_category_tabs_and_articles():
+    articles = [
+        _sample_article("a1", "記事タイトル1", "epigenetics"),
+        _sample_article("a2", "記事タイトル2", "well-being"),
+    ]
+    html = build_html(articles)
+
+    assert "精神医学" in html
+    assert "エピジェネティクス" in html
+    assert "認知行動療法" in html
+    assert "記事タイトル1" in html
+    assert "記事タイトル2" in html
+    assert "未分類" not in html
+
+
+def test_build_html_shows_unclassified_tab_when_present():
+    articles = [_sample_article("a1", "記事タイトル1", "unclassified")]
+    html = build_html(articles)
+    assert "未分類" in html
