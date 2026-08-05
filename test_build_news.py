@@ -1,3 +1,5 @@
+import datetime
+import os
 import textwrap
 from pathlib import Path
 
@@ -161,7 +163,7 @@ def test_extract_summary_skips_blockquote_role_statement():
     assert "サイエンスコミュニケーター" not in summary
 
 
-def _sample_article(article_id, title, category):
+def _sample_article(article_id, title, category, updated_at="2026-01-01"):
     return {
         "id": article_id,
         "title": title,
@@ -170,6 +172,7 @@ def _sample_article(article_id, title, category):
         "authors": "Author A",
         "tags": ["tag1", "tag2"],
         "category": category,
+        "updated_at": updated_at,
         "summary": "概要の抜粋テキスト",
         "body_html": "<h2>概要</h2><p>本文</p>",
     }
@@ -188,6 +191,18 @@ def test_build_html_includes_category_tabs_and_articles():
     assert "記事タイトル1" in html
     assert "記事タイトル2" in html
     assert "未分類" not in html
+
+
+def test_build_html_renders_date_before_title_and_sorts_newest_first():
+    articles = [
+        _sample_article("a1", "記事タイトル1", "epigenetics", updated_at="2026-01-01"),
+    ]
+    html = build_html(articles)
+
+    # 見出し行の先頭に日付span、続けてタイトルが表示されるテンプレートになっている
+    assert '<span class="date">${a.updated_at}</span> ${a.title}' in html
+    # 新しい順(降順)にソートするロジックが含まれる
+    assert "b.updated_at.localeCompare(a.updated_at)" in html
 
 
 def test_build_html_includes_subcategory_dropdown():
@@ -288,3 +303,19 @@ def test_generate_site_skips_missing_subcategory_folder(tmp_path):
     html = output_path.read_text(encoding="utf-8")
 
     assert "論文ノート" in html
+
+
+def test_generate_site_includes_updated_at_from_file_mtime(tmp_path):
+    path = _write_note(
+        tmp_path / "重要論文解説",
+        "note1_精読ノート.md",
+        'title: "テスト論文1"\ncategory: psychiatry\n',
+        "\n## 概要\n\n内容\n",
+    )
+    target_timestamp = datetime.datetime(2026, 1, 15).timestamp()
+    os.utime(path, (target_timestamp, target_timestamp))
+
+    output_path = generate_site(tmp_path)
+    html = output_path.read_text(encoding="utf-8")
+
+    assert '"updated_at": "2026-01-15"' in html

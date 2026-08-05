@@ -1,0 +1,96 @@
+---
+title: "Moving toward precision and personalized treatment strategies in psychiatry"
+source: "Moving toward precision and personalized treatment strategies in psychiatry.pdf"
+journal: "International Journal of Neuropsychopharmacology, 2025, Vol.28, No.5, pyaf025 (DOI: 10.1093/ijnp/pyaf025)"
+authors: "Stefano Comai, Mirko Manchia, Marta Bosia, Alessandro Miola, Sara Poletti, Francesco Benedetti, Sofia Nasini, Raffaele Ferri, Dan Rujescu, Marion Leboyer, Julio Licinio, Bernhard T. Baune, Alessandro Serretti"
+type: "総説（Narrative Review）"
+category: psychiatry
+tags:
+  - 論文精読
+  - 精神医学
+  - 精密医療
+  - バイオマーカー
+  - 神経画像
+  - EEG
+  - 免疫
+  - キヌレニン経路
+  - 概日リズム
+  - ゲノミクス
+  - 薬物治療モニタリング
+---
+
+# Moving toward precision and personalized treatment strategies in psychiatry 精読ノート
+
+## 概要（500字以内）
+
+本総説は、CINP（国際神経精神薬理学会）のGlobal Networking Community for Precision Psychiatryによるイニシアチブとして、精神科領域における精密医療（precision psychiatry）の現状を、臨床所見・神経画像（MRI/fMRI/PET）・脳波（EEG）・蛋白バイオマーカー（IL-2、S100B、NfL）・免疫（サイトカイン等）・キヌレニン経路・概日リズム・ゲノミクス（GWAS、多遺伝子リスクスコア、CYP薬理遺伝学）という8ドメイン横断で概観するナラティブレビューである。うつ病・双極性障害・統合失調症を中心に、各バイオマーカーの治療反応予測・患者層別化への応用例を紹介し、Table1で全ドメインの候補バイオマーカーと臨床応用をまとめ、Figure1で統合的な精密医療の概念枠組みを提示する。結論として、単一のマーカーやモダリティだけでは精神疾患の複雑性を捉えきれず、多分野・多モーダルな統合が不可欠であるとし、データ再現性、モデルの頑健性、倫理・実装面の課題を今後の展望として挙げている。網羅的な系統レビューではなく、代表的知見を紹介する概説論文である点に留意が必要である。
+
+## Figure・Tableの解説
+
+### Figure 1：精密精神医学の統合フレームワーク（7ページ）
+臨床所見（ピンク）、神経生理・蛋白バイオマーカー・免疫を含む生物学的マーカー（青）、代謝経路（緑）、概日リズム（オレンジ）、ゲノミクス（紫）の6つの主要ドメインが、統合的解析（integrative analysis）に収束し、薬剤選択・治療戦略・リスク予測・モニタリング計画という4種類の治療推奨につながる、という概念図。本文で紹介される多様なバイオマーカー研究群を1枚の枠組みに集約し、「単独のマーカーでは不十分で統合が必要」という結論の視覚的な裏付けとして機能している。
+
+### Table 1：精密精神医学における候補バイオマーカーとその応用（6ページ）
+神経画像（MRI/fMRI/PET）、神経生理（EEG）、蛋白バイオマーカー（IL-2、S100B、NfL）、遺伝学（GWAS、多遺伝子リスクスコア、SNP）、エピジェネティクス（DNAメチル化、ヒストン修飾、ノンコーディングRNA）、概日リズム（クロノタイプ、メラトニン、睡眠覚醒パターン）、キヌレニン経路（キヌレン酸、キノリン酸等）、腸内細菌叢-脳軸（マイクロバイオームプロファイル、代謝物）、臨床症候プロファイル（症状クラスタリング、忍容性プロファイル）、デジタル表現型（ウェアラブル・スマートフォンによる連続モニタリング）の10ドメインを、候補バイオマーカーと臨床応用（診断補助・治療反応予測・患者層別化等）とともに一覧化した表。本総説全体の内容を俯瞰する要約表として機能している一方、「エピジェネティクス」の行は本文中に対応する独立した解説セクションがなく、Table内のみの記載にとどまっている点に注意が必要である。
+
+## 8項目評価
+
+**※本論文は原著研究ではなく総説（ナラティブレビュー）であるため、「サンプルサイズと選択基準」「統計分析の妥当性」の項目は、一次研究向けの基準をそのまま適用せず、「文献検索・選択基準の透明性」「引用研究間の異質性への配慮」という観点に読み替えて評価する。**
+
+**①研究デザイン**：CINP GNC for Precision Psychiatryのイニシアチブとして位置づけられたナラティブレビューであり、Introduction文中で「this work is not exhaustive and focuses on offering a broad perspective and some examples rather than detailed descriptions」と自ら明言している。臨床所見から神経画像・EEG・蛋白・免疫・代謝・概日リズム・ゲノミクスへと段階的に展開する構成は理解しやすいが、系統的レビューのような検索式・スクリーニング手順は一切示されていない。
+
+**②文献検索・選択基準（サンプルサイズに読み替え）**：検索データベース名、検索キーワード、包含・除外基準についての記載が本文中に存在しない。161本の参考文献が引用されているが、どのような基準でこれらが選定されたのかは不明であり、再現可能性（同じプロセスで同じ文献集合が得られるか）は担保されていない。
+
+**③方法論の適切性**：8ドメインを横断する構成自体は精密精神医学の全体像を把握する上で有用だが、各セクションの記述量に大きな差がある。免疫・キヌレニン経路の章は複数段落にわたり詳細だが、Table1に記載されている「エピジェネティクス」ドメインには対応する本文セクションが存在せず、章立てと要約表の整合性に欠ける。
+
+**④引用研究間の異質性への統合（統計分析の妥当性に読み替え）**：本総説自体は独自の統計解析やメタ解析を行っておらず、既存研究（一部はメタ解析、大半は個別研究）の記述的要約にとどまる。異なる疾患・サンプルサイズ・評価指標を持つ研究知見が並列的に紹介されており、エビデンスの質（例えば単一施設の予備的研究か大規模コンソーシアム研究か）を区別する体系的な評価軸は明示されていない。
+
+**⑤結果の信頼性と再現性**：本文中で「many biomarkers have failed independent replication」「genomic data were not able to reliably distinguish clinical examples of lithium responders and non-responders」など、再現性の問題や否定的な結果も誠実に取り上げている点は評価できる。ただし、これらの限界指摘は個々の話題ごとに散発的であり、レビュー全体を通じた統一的な批判的吟味（critical appraisal）の枠組みは持たない。
+
+**⑥結論の妥当性**：Conclusionsは「no single marker or modality can fully capture the intricate nature of psychiatric conditions」「a multidisciplinary and multimodal approach is essential」とし、本文で紹介した各ドメインの知見を過不足なく要約した上で、標準化・再現性・倫理・患者受容性という課題も明記しており、本文の内容と整合した穏当な結論となっている。
+
+**⑦新規性**：個々のバイオマーカー研究自体に新規性はなく、既存の一次研究・専門的レビューの紹介が中心である。本総説の価値は、CINP GNCという国際的な学術コミュニティの視点から、臨床・神経画像・EEG・蛋白・免疫・代謝・概日リズム・ゲノミクスという通常は別々に論じられる領域を1つの統合フレームワーク（Figure1・Table1）にまとめた編纂的・啓発的価値にある。
+
+**⑧臨床的意義**：治療薬物モニタリング（TDM）やCYP2D6等の薬理遺伝学的検査など、既に一部臨床実装が進んでいる手法と、EEGや蛋白バイオマーカーのようにまだ研究段階（proof-of-concept）の手法を区別して紹介しており、臨床医が現在地を把握する参考資料として有用である。一方で「reliance on biomarkers only may be misleading in specific cases」と明記される通り、個々のバイオマーカーを単独で臨床判断に用いることへの警鐘も含まれており、過度な期待を戒めるバランスの取れた記述になっている。
+
+## 質疑応答のシミュレーション
+
+**設定**：本論文を解説してきた大学院生に対し、世界トップレベルの研究者・教育者（データや解釈にアカデミックに厳しく、常に批判的に精読する立場）が10個の質問を投げかける。
+
+**Q1. このレビューは系統的レビューを標榜していますか。文献選択の透明性はどの程度担保されていますか。**
+A. いいえ。Introductionで著者ら自身が「this work is not exhaustive and focuses on offering a broad perspective and some examples」と明言しており、系統的レビューではなくナラティブレビューであることを明確にしています。ただしその裏返しとして、検索データベースや検索式、包含・除外基準は一切示されておらず、読者が文献選定の網羅性・偏りを検証する手立てはありません。
+
+**Q2. Table1には「エピジェネティクス」というドメインが挙げられていますが、本文中のどこで解説されていますか。**
+A. 実は本文中に「Epigenetics」という独立した見出しセクションは存在しません。Genomicsセクションの中でもDNAメチル化やヒストン修飾についての具体的な記述は見当たらず、Table1のみに記載がある状態です。これはレビューの章立てと要約表の整合性という観点で明確な弱点であり、読者はTable1を見て本文を探しても該当箇所が見つからない可能性があります。
+
+**Q3. 蛋白バイオマーカー（IL-2、S100B、NfL）はどの程度臨床応用に近い段階にあると考えられますか。**
+A. 本文でも「Although still far from clinical utility」と明記されている通り、いずれも研究段階です。IL-2は低用量add-on療法の第II相試験で症状改善との関連が示されていますが単一の試験に基づく知見であり、S100Bは疾患特異性に乏しく（統合失調症・うつ病・双極性障害・自閉症・ADHDいずれでも上昇）、NfLも「lack specificity for particular diagnoses」と診断特異性の低さが指摘されています。いずれも大規模な独立検証を経ていない段階です。
+
+**Q4. キヌレニン経路に関するMarx et al.のメタ解析（101研究）の結果は、本総説の他の記述とどう整合していますか。**
+A. Marx et al.のメタ解析は気分障害（うつ病・双極性障害）でキヌレン酸の低下、統合失調症では末梢キヌレン酸・キノリン酸に有意差なしという知見を示しており、疾患間で異なるパターンを報告しています。本総説はこれをそのまま引用しつつ、統合失調症の治療抵抗性例でキヌレニン経路活性が高いという別の知見も並記しており、疾患特異性の議論としては整合していますが、メタ解析という高いエビデンスレベルの知見と単一の探索的研究の知見が同列に扱われている点は批判的に見る必要があります。
+
+**Q5. CYP2D6等の薬理遺伝学的検査は、本総説の中で最も臨床実装が進んでいる例として紹介されていますが、その臨床的限界は何ですか。**
+A. 本文で明確に指摘されている限界はphenoconversion（併用薬によって酵素活性が薬理遺伝学的予測から乖離する現象）です。また、CPIC・DPWGなどのガイドラインは存在するものの、「widespread implementation in psychiatry is hampered by limited evidence on clinical outcomes and cost-effectiveness」と、費用対効果や臨床アウトカムに関するエビデンス不足が実装の障壁として明記されています。遺伝子型がわかっても、それだけで治療方針を決定できるわけではありません。
+
+**Q6. 概日リズム研究における「circadian disruptionは原因か結果か」という問いに対して、本総説はどう答えていますか。**
+A. 本総説はこの問いに明確な答えを出していません。「It is uncertain whether circadian disruptions predispose individuals to mood disorders, arise due to them, or share underlying physiological mechanisms」と述べるにとどまり、因果関係の方向性は未解明であることを率直に認めています。この誠実な不確実性の明示は評価できる一方、リズム障害を「trigger」とする記述と「predictor」とする記述が混在しており、読者は文脈ごとに注意して読む必要があります。
+
+**Q7. GWASや多遺伝子リスクスコア（PRS）は、リチウム反応性の予測にどの程度実用的だと言えますか。**
+A. 本文では相反する知見が併記されています。台湾のGWAS（GADL1）やSESTD1関連の知見はリチウム反応性との関連を示した一方、「genomic data were not able to reliably distinguish clinical examples of lithium responders and non-responders」という否定的な報告も引用されています。PRSは「more effective when incorporated into multimodal models」とされており、単独では実用段階に達していないというのが総説全体を通じた一貫した立場です。
+
+**Q8. Figure1の統合フレームワークは、本文で紹介された個々の知見の統合方法を具体的に示していますか。**
+A. いいえ。Figure1は6ドメインが「integrative analysis」に収束するという概念図にとどまり、具体的にどのような統計・機械学習手法でこれらの異種データを統合するのか（重み付け方法、欠測データの扱い、モデルの検証方法等）についての記述は本文にありません。概念的な見取り図としては有用ですが、実装可能な統合アルゴリズムを提示するものではない点に注意が必要です。
+
+**Q9. この総説の新規性を批判的に評価するとどうなりますか。**
+A. 個々のバイオマーカー・治療反応予測研究自体は既存文献の紹介であり、新規のデータや解析を提示するものではありません。新規性は、CINP GNC for Precision Psychiatryという国際的な学術コミュニティが、通常は個別に論じられる8つの領域（臨床・神経画像・EEG・蛋白・免疫・代謝・概日リズム・ゲノミクス）を1つの統合的な視座（Figure1・Table1）で提示した編纂的・組織的価値にあり、個別技術の発見的価値と混同すべきではありません。
+
+**Q10. 利益相反の記載を踏まえると、本総説の記述にはどのような留意点がありますか。**
+A. Conflicts of interest欄には、通信著者を含む複数の著者が多数の製薬企業（Angelini、AstraZeneca、Janssen、Lundbeck、Pfizer等）から助言料・研究助成を受けていることが開示されています。特にTDMや薬理遺伝学的検査、免疫調整療法（IL-2等）に関する記述は、これらの企業の製品・研究領域と関連する可能性があるため、レビューの選択や強調の仕方に一定のバイアスが生じていないか、読者は開示情報と照らし合わせて批判的に読む必要があります。
+
+## 整合性の最終チェック
+
+本ノートは、対象PDF（13ページ、International Journal of Neuropsychopharmacology 2025, Vol.28, No.5, pyaf025）についてReadツールで`pdftoppm is not installed`のエラーが出たため、スキル同梱の`extract_pdf_text.py`（pdfplumberベース）でscratchpad配下のサブフォルダ（`paper1`）にテキスト抽出を行い、page_1.txt〜page_13.txtの全13ページをすべて`Read`ツールで読了して作成した。
+
+Abstract、Introduction、Clinical Features、Neuroimaging Techniques（MRI/fMRI/PET）、Electroencephalography、Protein Biomarkers、Immunology（Current Immune Markers、Immunomodulation）、Kynurenine Pathway、Circadian Rhythms、Genomics、Table1、Figure1、Conclusions、Acknowledgments/Author contributions/Funding/Conflicts of interest/Data availability、References（1〜161番、9〜13ページ）まで全章を通読した。本文中に言及されるFigureはFigure1（統合フレームワーク図）の1点のみ、TableはTable1（候補バイオマーカー一覧）の1点のみであり、抜け漏れがないことを本文中の図表番号と照合して確認した。
+
+本論文はナラティブレビューであり、本文中で著者ら自身が「not exhaustive」「broad perspective」と明言する一方、系統的レビューを想起させる用語や構成は用いていない。この性質を踏まえ、8項目評価では②「文献選択基準」・④「引用研究間の統合方法」の項目名を読み替えた上でその旨を冒頭に明記し、質疑応答セクションでもTable1と本文の不整合（エピジェネティクスの記載漏れ）、概日リズムの因果方向の未解明、利益相反開示との関連など、批判的な論点を取り上げた。本文中の数値・固有名詞（例：IL-2の第II相試験、S100Bの疾患横断的知見、Marx et al.のキヌレニン経路メタ解析101研究、CYP2D6のphenoconversion、GADL1・SESTD1のリチウム反応性GWAS）は、抽出テキストの該当箇所と照合し、ノート内の記述との間に矛盾がないことを確認した。

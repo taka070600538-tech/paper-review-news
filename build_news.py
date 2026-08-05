@@ -1,3 +1,4 @@
+import datetime
 import json
 import re
 from pathlib import Path
@@ -155,8 +156,10 @@ def build_html(articles: list[dict]) -> str:
   .headline-list {{ display: flex; flex-direction: column; }}
   .headline {{ display: block; padding: 0.6rem 0.2rem; border-bottom: 1px solid #ddd; color: #06c; text-decoration: none; font-size: 1rem; }}
   .headline:hover {{ text-decoration: underline; background: rgba(37,99,235,0.06); }}
+  .headline .date {{ color: #888; font-size: 0.85rem; margin-right: 0.4rem; }}
   @media (prefers-color-scheme: dark) {{
     .headline {{ color: #6cf; border-color: #444; }}
+    .headline .date {{ color: #999; }}
   }}
   .badge {{ display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eee; color: #333; border: 1px solid #ccc; margin-right: 0.4rem; }}
   .hidden {{ display: none; }}
@@ -190,10 +193,12 @@ let currentSubcategory = 'all';
 function renderList(category) {{
   currentCategory = category;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.category === category));
-  const list = articles.filter(a => a.category === category && (currentSubcategory === 'all' || a.subcategory === currentSubcategory));
+  const list = articles
+    .filter(a => a.category === category && (currentSubcategory === 'all' || a.subcategory === currentSubcategory))
+    .sort((a, b) => b.updated_at.localeCompare(a.updated_at));
   const listView = document.getElementById('listView');
   listView.innerHTML = `<div class="headline-list">${{list.map(a => `
-    <a href="#" class="headline" data-id="${{a.id}}">${{a.title}}</a>
+    <a href="#" class="headline" data-id="${{a.id}}"><span class="date">${{a.updated_at}}</span> ${{a.title}}</a>
   `).join('') || '<p>このカテゴリーの記事はまだありません。</p>'}}</div>`;
   document.querySelectorAll('.headline').forEach(el => {{
     el.addEventListener('click', (e) => {{ e.preventDefault(); showDetail(el.dataset.id); }});
@@ -248,6 +253,9 @@ def generate_site(folder: Path) -> Path:
             category, method = classify_category(note)
             note["category"] = category
             note["id"] = path.stem
+            note["updated_at"] = datetime.date.fromtimestamp(
+                path.stat().st_mtime
+            ).isoformat()
             note["body_html"] = render_article_html(note["body_md"])
             note["summary"] = extract_summary(note["body_md"])
             articles.append(note)
