@@ -10,9 +10,9 @@ FRONTMATTER_DELIM = "---"
 
 SITE_TITLE = "Make Well-Being First"
 
-# TOPページ見出し直下に置くYouTube動画へのリンク。動画を差し替えるときはここを変更する。
-YOUTUBE_URL = "https://youtu.be/fFUVwz6roM4"
-YOUTUBE_LABEL = "YouTubeで解説動画を見る"
+# TOPページ見出し直下に置くYouTubeチャンネルへのリンク。リンク先を変えるときはここを変更する。
+YOUTUBE_URL = "https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"
+YOUTUBE_LABEL = "YouTubeチャンネルで解説動画を見る"
 
 CATEGORIES: list[tuple[str, str]] = [
     ("psychiatry", "精神医学"),
