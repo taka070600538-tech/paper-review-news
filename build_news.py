@@ -10,6 +10,10 @@ FRONTMATTER_DELIM = "---"
 
 SITE_TITLE = "Make Well-Being First"
 
+# TOPページ見出し直下に置くYouTube動画へのリンク。動画を差し替えるときはここを変更する。
+YOUTUBE_URL = "https://youtu.be/fFUVwz6roM4"
+YOUTUBE_LABEL = "YouTubeで解説動画を見る"
+
 CATEGORIES: list[tuple[str, str]] = [
     ("psychiatry", "精神医学"),
     ("epigenetics", "エピジェネティクス"),
@@ -150,6 +154,9 @@ def build_html(articles: list[dict]) -> str:
 <style>
   :root {{ color-scheme: light dark; }}
   body {{ font-family: system-ui, "Hiragino Sans", sans-serif; max-width: 860px; margin: 0 auto; padding: 1.5rem; line-height: 1.7; }}
+  .youtube-link {{ display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.6rem 1.1rem; margin: 0.25rem 0 1.5rem; border-radius: 8px; background: #e62117; color: #fff; text-decoration: none; font-weight: 600; font-size: 0.95rem; }}
+  .youtube-link:hover {{ background: #b81410; }}
+  .youtube-link svg {{ width: 1.5rem; height: 1.5rem; flex-shrink: 0; }}
   .tabs {{ display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }}
   .tab {{ padding: 0.5rem 1rem; border: 1px solid #888; border-radius: 999px; background: transparent; cursor: pointer; font-size: 0.95rem; }}
   .tab.active {{ background: #2563eb; color: white; border-color: #2563eb; }}
@@ -175,6 +182,10 @@ def build_html(articles: list[dict]) -> str:
 </head>
 <body>
 <h1>{SITE_TITLE}</h1>
+<a class="youtube-link" href="{YOUTUBE_URL}" target="_blank" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+  <span>{YOUTUBE_LABEL}</span>
+</a>
 <div class="tabs">{tabs_html}</div>
 <div class="subcategory-bar">
   <select id="subcategorySelect">

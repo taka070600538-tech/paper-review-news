@@ -213,6 +213,16 @@ def test_build_html_uses_site_title_in_title_tag_and_heading():
     assert "精神医学的アプローチによるWell-Beingの実現" not in html
 
 
+def test_build_html_includes_youtube_link_above_tabs():
+    html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
+
+    assert 'href="https://youtu.be/fFUVwz6roM4"' in html
+    assert 'target="_blank"' in html
+    assert 'rel="noopener noreferrer"' in html
+    # 見出し直下・カテゴリータブより上（最初に目に入る位置）に置く
+    assert html.index('class="youtube-link"') < html.index('<div class="tabs">')
+
+
 def test_build_html_includes_subcategory_dropdown():
     articles = [_sample_article("a1", "記事タイトル1", "epigenetics")]
     html = build_html(articles)
