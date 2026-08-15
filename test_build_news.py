@@ -205,6 +205,14 @@ def test_build_html_renders_date_before_title_and_sorts_newest_first():
     assert "b.updated_at.localeCompare(a.updated_at)" in html
 
 
+def test_build_html_uses_site_title_in_title_tag_and_heading():
+    html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
+
+    assert "<title>Make Well-Being First</title>" in html
+    assert "<h1>Make Well-Being First</h1>" in html
+    assert "精神医学的アプローチによるWell-Beingの実現" not in html
+
+
 def test_build_html_includes_subcategory_dropdown():
     articles = [_sample_article("a1", "記事タイトル1", "epigenetics")]
     html = build_html(articles)

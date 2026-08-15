@@ -8,6 +8,8 @@ import yaml
 
 FRONTMATTER_DELIM = "---"
 
+SITE_TITLE = "Make Well-Being First"
+
 CATEGORIES: list[tuple[str, str]] = [
     ("psychiatry", "精神医学"),
     ("epigenetics", "エピジェネティクス"),
@@ -144,7 +146,7 @@ def build_html(articles: list[dict]) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>精神医学的アプローチによるWell-Beingの実現</title>
+<title>{SITE_TITLE}</title>
 <style>
   :root {{ color-scheme: light dark; }}
   body {{ font-family: system-ui, "Hiragino Sans", sans-serif; max-width: 860px; margin: 0 auto; padding: 1.5rem; line-height: 1.7; }}
@@ -172,7 +174,7 @@ def build_html(articles: list[dict]) -> str:
 </style>
 </head>
 <body>
-<h1>精神医学的アプローチによるWell-Beingの実現</h1>
+<h1>{SITE_TITLE}</h1>
 <div class="tabs">{tabs_html}</div>
 <div class="subcategory-bar">
   <select id="subcategorySelect">
