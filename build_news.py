@@ -97,6 +97,8 @@ def parse_note(path: Path) -> dict:
     return {
         "title": str(meta.get("title", "")).strip(),
         "source": str(meta.get("source", "")).strip(),
+        # 原著（DOIまたは出版社ページ）へのURL。公開ページから原典に飛べるようにする。
+        "source_url": str(meta.get("source_url", "") or "").strip(),
         "journal": str(meta.get("journal", "")).strip(),
         "authors": str(meta.get("authors", "")).strip(),
         "type": str(meta.get("type", "")).strip(),
@@ -203,9 +205,12 @@ def build_html(articles: list[dict]) -> str:
   .badge {{ display: inline-block; font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 4px; background: #eee; color: #333; border: 1px solid #ccc; margin-right: 0.4rem; }}
   .hidden {{ display: none; }}
   #backBtn {{ margin-bottom: 1rem; cursor: pointer; }}
+  .source-url {{ font-size: 0.9rem; word-break: break-all; }}
+  .source-url a {{ color: #06c; }}
   .tags span {{ font-size: 0.75rem; color: #666; margin-right: 0.5rem; }}
   @media (prefers-color-scheme: dark) {{
     .badge {{ background: #444; color: #eee; border-color: #666; }}
+    .source-url a {{ color: #6cf; }}
     .tags span {{ color: #aaa; }}
   }}
 </style>
@@ -255,6 +260,7 @@ function showDetail(id) {{
     <span class="badge">${{a.type}}</span>
     <h1>${{a.title}}</h1>
     <p>${{a.journal}} / ${{a.authors}}</p>
+    ${{a.source_url ? `<p class="source-url">原著論文: <a href="${{a.source_url}}" target="_blank" rel="noopener noreferrer">${{a.source_url}}</a></p>` : ''}}
     <div class="tags">${{a.tags.map(t => `<span>#${{t}}</span>`).join('')}}</div>
     <hr>
     ${{a.body_html}}

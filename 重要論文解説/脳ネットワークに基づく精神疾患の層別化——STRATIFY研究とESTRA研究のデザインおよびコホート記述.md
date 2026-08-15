@@ -6,6 +6,7 @@ authors: Nilakshi Vaidya, Zuo Zhang, Kofoworola Agunbiade, Georgina Keggin, et a
 type: コホートプロファイル・研究プロトコル論文（Cohort Profile / Protocol Paper）
 tags: [精読, psychiatry, 脳ネットワーク, 層別化医療, computational psychiatry, MDD, AUD, 精神病, 摂食障害, IMAGEN, 多施設コホート]
 category: psychiatry
+source_url: https://doi.org/10.1038/s41380-026-03779-x
 ---
 
 # 脳ネットワークに基づく精神疾患の層別化——STRATIFY研究とESTRA研究のデザインおよびコホート記述 精読ノート

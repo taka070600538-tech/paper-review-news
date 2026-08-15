@@ -17,6 +17,7 @@ tags:
   - Woebot
   - Wysa
   - Youper
+source_url: https://doi.org/10.18502/ijps.v20i1.17395
 ---
 
 # AI搭載型認知行動療法チャットボット——システマティックレビュー 精読ノート

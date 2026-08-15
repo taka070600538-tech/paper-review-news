@@ -220,9 +220,10 @@ def test_build_html_includes_youtube_video_and_channel_links_above_tabs():
     channel_href = 'href="https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"'
     assert video_href in html
     assert channel_href in html
-    # 2本ともタブ移動＋リンク元の乗っ取り防止を付ける
-    assert html.count('target="_blank"') == 2
-    assert html.count('rel="noopener noreferrer"') == 2
+    # 2本ともタブ移動＋リンク元の乗っ取り防止を付ける（他の箇所を数えないようブロック内で数える）
+    block = html[html.index('<div class="youtube-links">') : html.index('<div class="tabs">')]
+    assert block.count('target="_blank"') == 2
+    assert block.count('rel="noopener noreferrer"') == 2
     # 動画リンクを先、チャンネルリンクを後に並べる
     assert html.index(video_href) < html.index(channel_href)
     # まとめてカテゴリータブより上（最初に目に入る位置）に置く
@@ -237,6 +238,45 @@ def test_build_html_marks_first_youtube_link_primary_and_rest_secondary():
         '<a class="youtube-link secondary" '
         'href="https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"' in html
     )
+
+
+def test_parse_note_reads_source_url(tmp_path):
+    path = tmp_path / "note.md"
+    path.write_text(
+        "---\n"
+        'title: "テスト論文"\n'
+        'journal: "Test Journal 2026;1:1-10"\n'
+        "source_url: https://doi.org/10.1234/test.2026.1\n"
+        "---\n\n"
+        "本文\n",
+        encoding="utf-8",
+    )
+
+    note = parse_note(path)
+    assert note["source_url"] == "https://doi.org/10.1234/test.2026.1"
+
+
+def test_parse_note_source_url_defaults_to_empty(tmp_path):
+    path = tmp_path / "note.md"
+    path.write_text(
+        '---\ntitle: "テスト"\n---\n\n本文\n',
+        encoding="utf-8",
+    )
+
+    assert parse_note(path)["source_url"] == ""
+
+
+def test_build_html_renders_source_url_as_visible_link():
+    article = _sample_article("a1", "記事タイトル1", "epigenetics")
+    article["source_url"] = "https://doi.org/10.1234/test.2026.1"
+    html = build_html([article])
+
+    # URLはJSONに載せて詳細ビューで使う
+    assert "https://doi.org/10.1234/test.2026.1" in html
+    # リンク先URLを文字としても併記する（hrefと表示テキストの両方に入れる）
+    assert 'class="source-url"' in html
+    assert "原著論文" in html
+    assert "a.source_url ?" in html
 
 
 def test_build_html_includes_subcategory_dropdown():

@@ -14,6 +14,7 @@ tags:
   - 疲労
   - RCT
   - ReCOVer試験
+source_url: https://doi.org/10.1093/cid/ciad257
 ---
 
 # COVID-19罹患後の重症疲労に対する認知行動療法の有効性を検証した多施設ランダム化比較試験 精読ノート

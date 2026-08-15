@@ -14,6 +14,7 @@ tags:
   - ISTDP
   - 能動的推論
   - 人工知能
+source_url: https://doi.org/10.3389/fpsyt.2026.1749364
 ---
 
 # 知覚・評価・投与・安全確保(PAD-S) 精読ノート
