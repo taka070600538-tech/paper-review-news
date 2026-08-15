@@ -213,14 +213,30 @@ def test_build_html_uses_site_title_in_title_tag_and_heading():
     assert "精神医学的アプローチによるWell-Beingの実現" not in html
 
 
-def test_build_html_includes_youtube_link_above_tabs():
+def test_build_html_includes_youtube_video_and_channel_links_above_tabs():
     html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
 
-    assert 'href="https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"' in html
-    assert 'target="_blank"' in html
-    assert 'rel="noopener noreferrer"' in html
-    # 見出し直下・カテゴリータブより上（最初に目に入る位置）に置く
-    assert html.index('class="youtube-link"') < html.index('<div class="tabs">')
+    video_href = 'href="https://youtu.be/fFUVwz6roM4"'
+    channel_href = 'href="https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"'
+    assert video_href in html
+    assert channel_href in html
+    # 2本ともタブ移動＋リンク元の乗っ取り防止を付ける
+    assert html.count('target="_blank"') == 2
+    assert html.count('rel="noopener noreferrer"') == 2
+    # 動画リンクを先、チャンネルリンクを後に並べる
+    assert html.index(video_href) < html.index(channel_href)
+    # まとめてカテゴリータブより上（最初に目に入る位置）に置く
+    assert html.index('<div class="youtube-links">') < html.index('<div class="tabs">')
+
+
+def test_build_html_marks_first_youtube_link_primary_and_rest_secondary():
+    html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
+
+    assert '<a class="youtube-link" href="https://youtu.be/fFUVwz6roM4"' in html
+    assert (
+        '<a class="youtube-link secondary" '
+        'href="https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA"' in html
+    )
 
 
 def test_build_html_includes_subcategory_dropdown():
