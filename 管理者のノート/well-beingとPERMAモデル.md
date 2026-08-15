@@ -154,7 +154,7 @@ aspiration（希望）＝well-being（充実した状態）×バリュー（価�
 
 - aspirationを同定したら、実現可能なステップ（小目標）に分けて、一つ一つ達成していく。
 
-- 理想的な部活やスポーツ、結婚生活などがwell-beingのイメージに近いが、どんな活動でも究極的な目的はwell-beingであるので、FRAPなスキーマになればなるほどwell-beingに近づける。（ルート、手段の違いにすぎない）
+- 理想的な部活やスポーツ、結婚生活などがwell-beingのイメージに近いが、どんな活動でも究極的な目的はwell-beingであるので、[[心理学 - FRAP]]なスキーマになればなるほどwell-beingに近づける。（ルート、手段の違いにすぎない）
 
 - 人生においてwell-beingを感じている時期とは、「キラキラしておらず、地味だが充実していた」などと肯定的に思い出される。
 
@@ -170,6 +170,6 @@ aspiration（希望）＝well-being（充実した状態）×バリュー（価�
 
 - 一つのaspirationに到達したら、そこにずっといてもいいが、別のaspirationに向かうことでwell-beingが継続できることもある。
 
-- ただし自分にとってのFRAPなaspirationでなければ、well-beingの実現が難しい。
+- ただし自分にとっての[[心理学 - FRAP]]なaspirationでなければ、well-beingの実現が難しい。
 
-- 依存症の治療方針として、well-beingに至るための依存対象以外のFRAPのaspirationを一つ以上提示する。患者が何に依存しているかは、aspirationを考える上でヒントになる。
+- 依存症の治療方針として、well-beingに至るための依存対象以外の[[心理学 - FRAP]]のaspirationを一つ以上提示する。患者が何に依存しているかは、aspirationを考える上でヒントになる。
