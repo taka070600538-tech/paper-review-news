@@ -89,4 +89,4 @@ A. 著者ら自身が提言している通り、より大規模で多様な学�
 
 PDF全13ページ（本文・参考文献含む）をReadツールで直接読み込み、全ページを確認した。本文中にFigure・Tableへの言及は一箇所も存在せず、「Figure・Tableなし」という記載は本文の記述と整合している。記述統計の数値（自己肯定感 平均27.79・SD 8.597、FoMO 平均43.69・SD 17.008、PWB 平均54.01・SD 12.379）、信頼性係数（Cronbach's α 0.953〜0.976）、正規性検定（Asymp. Sig. 2-tailed = 0.200）、Pearson相関係数（自己肯定感-PWB: r=0.740、自己肯定感-FoMO: r=-0.658、FoMO-PWB: r=-0.867、いずれもp<0.05）は、いずれも本文「Hasil Uji Statistik Deskriptif」「Uji Validitas dan Realibilitas」「Uji Normalitas」「Uji korelasi pearson」の各節に記載された数値をそのまま転記しており、本ノートの記述と齟齬はない。原文はインドネシア語だが、要旨（Abstract）は英語で併記されており、内容の整合性を英語要旨とも突き合わせて確認した。
 
-[元論文PDF](../../../添付ファイル/Pengaruh%20Tingkat%20Self-Esteem%20dan%20Fear%20Of%20Missing%20Out%20%28FoMo%29%20terhadap%20Kondisi%20Psychological%20Well-Being%20pada%20Siswa%20SMK%20X%20Bandung.pdf)
+[元論文PDF](../../../添付ファイル/PDF/Pengaruh%20Tingkat%20Self-Esteem%20dan%20Fear%20Of%20Missing%20Out%20%28FoMo%29%20terhadap%20Kondisi%20Psychological%20Well-Being%20pada%20Siswa%20SMK%20X%20Bandung.pdf)

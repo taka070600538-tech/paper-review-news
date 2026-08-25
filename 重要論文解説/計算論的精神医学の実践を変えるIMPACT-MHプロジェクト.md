@@ -55,4 +55,4 @@ PDFの全2ページ（本文・謝辞と利益相反開示・著者情報・参�
 
 ---
 
-[元論文PDF](../../../添付ファイル/IMPACT-ING%20the%20practice%20of%20computational%20psychiatry.pdf)
+[元論文PDF](../../../添付ファイル/PDF/IMPACT-ING%20the%20practice%20of%20computational%20psychiatry.pdf)
