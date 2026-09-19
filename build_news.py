@@ -296,6 +296,13 @@ def build_html(articles: list[dict]) -> str:
   .translation-link:hover {{ background: #15803d; }}
   .translation-link.large {{ margin: 0; font-size: 1rem; padding: 0.55rem 1.2rem; }}
   .translation-cta {{ margin: 0.8rem 0; }}
+  .translation-local {{ display: inline-block; margin-left: 0.5rem; font-size: 0.8rem; font-weight: 600; padding: 0.05rem 0.6rem; border-radius: 999px; background: #e5e7eb; color: #4b5563; border: 1px solid #9ca3af; white-space: nowrap; vertical-align: middle; }}
+  .translation-local-note {{ font-size: 0.9rem; color: #555; margin: 0.6rem 0; }}
+  .translation-local-note .translation-local {{ margin-left: 0; }}
+  @media (prefers-color-scheme: dark) {{
+    .translation-local {{ background: #374151; color: #d1d5db; border-color: #6b7280; }}
+    .translation-local-note {{ color: #bbb; }}
+  }}
   @media (prefers-color-scheme: dark) {{
     .headline-row {{ border-color: #444; }}
     .headline {{ color: #6cf; }}
@@ -344,7 +351,7 @@ function renderList(category) {{
     .sort((a, b) => b.updated_at.localeCompare(a.updated_at));
   const listView = document.getElementById('listView');
   listView.innerHTML = `<div class="headline-list">${{list.map(a => `
-    <div class="headline-row"><a href="#" class="headline" data-id="${{a.id}}"><span class="date">${{a.updated_at}}</span> ${{a.title}}</a>${{a.translation_url ? `<a class="translation-link" href="${{a.translation_url}}" title="論文本文の日本語全文翻訳を読む">本文の全文翻訳あり</a>` : ''}}</div>
+    <div class="headline-row"><a href="#" class="headline" data-id="${{a.id}}"><span class="date">${{a.updated_at}}</span> ${{a.title}}</a>${{a.translation_url ? `<a class="translation-link" href="${{a.translation_url}}" title="論文本文の日本語全文翻訳を読む">本文の全文翻訳あり</a>` : ''}}${{a.translation_local_note ? `<span class="translation-local" title="${{a.translation_local_note}}">全文翻訳はローカル保存（非公開）</span>` : ''}}</div>
   `).join('') || '<p>このカテゴリーの記事はまだありません。</p>'}}</div>`;
   document.querySelectorAll('.headline').forEach(el => {{
     el.addEventListener('click', (e) => {{ e.preventDefault(); showDetail(el.dataset.id); }});
@@ -361,6 +368,7 @@ function showDetail(id) {{
     <p>${{a.journal}} / ${{a.authors}}</p>
     ${{a.source_url ? `<p class="source-url">原著論文: <a href="${{a.source_url}}" target="_blank" rel="noopener noreferrer">${{a.source_url}}</a></p>` : ''}}
     ${{a.translation_url ? `<p class="translation-cta"><a class="translation-link large" href="${{a.translation_url}}">本文の全文翻訳を読む &rarr;</a></p>` : ''}}
+    ${{a.translation_local_note ? `<p class="translation-local-note"><span class="translation-local">全文翻訳はローカル保存（非公開）</span> ${{a.translation_local_note}}</p>` : ''}}
     <div class="tags">${{a.tags.map(t => `<span>#${{t}}</span>`).join('')}}</div>
     <hr>
     ${{a.body_html}}
@@ -407,6 +415,14 @@ def generate_site(folder: Path) -> Path:
             note["body_html"] = render_article_html(note["body_md"])
             note["summary"] = extract_summary(note["body_md"])
             note["translation_url"] = ""
+            # 全文翻訳を作ったが原著のライセンス(CC BY-NC-ND等)で公開できない場合は、
+            # `全文翻訳/<同名>.local.md`(frontmatterの reason だけ)を置く。翻訳本文は置かない。
+            note["translation_local_note"] = ""
+            local_marker = folder / TRANSLATION_DIR / f"{path.stem}.local.md"
+            if local_marker.is_file():
+                marker_meta, _ = _split_frontmatter(local_marker)
+                note["translation_local_note"] = str(marker_meta.get("reason", "") or "").strip()
+                print(f"[translation-local] {path.name}")
             translation_path = folder / TRANSLATION_DIR / f"{path.stem}.md"
             if translation_path.is_file():
                 translation = parse_translation(translation_path)

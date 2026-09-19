@@ -461,3 +461,35 @@ def test_build_html_renders_translation_link_in_list_and_detail():
     assert "本文の全文翻訳を読む" in html
     # 一覧の日付→タイトルの並びは従来通り
     assert '<span class="date">${a.updated_at}</span> ${a.title}' in html
+
+
+# ---- ローカル保存(非公開)の全文翻訳 ----
+
+def test_generate_site_marks_local_only_translation(tmp_path):
+    _write_note(
+        tmp_path / "重要論文解説",
+        "論文——非公開.md",
+        'title: "テスト論文ND"\njournal: "J1"\nauthors: "A"\ntype: "総説"\ncategory: psychiatry\ntags: [精読]\n',
+        "\n## 概要\n\n本文\n",
+    )
+    _write_note(
+        tmp_path / "全文翻訳",
+        "論文——非公開.local.md",
+        'reason: "原著が CC BY-NC-ND のため公開不可"\n',
+        "",
+    )
+
+    generate_site(tmp_path)
+
+    assert not (tmp_path / "全文翻訳" / "論文——非公開.html").exists()
+    index_html = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert '"translation_url": ""' in index_html
+    assert '"translation_local_note": "原著が CC BY-NC-ND のため公開不可"' in index_html
+
+
+def test_build_html_renders_local_translation_badge_without_link():
+    html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
+
+    assert "a.translation_local_note ?" in html
+    assert "全文翻訳はローカル保存（非公開）" in html
+    assert 'class="translation-local"' in html
