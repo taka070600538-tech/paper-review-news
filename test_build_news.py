@@ -393,3 +393,71 @@ def test_generate_site_includes_updated_at_from_file_mtime(tmp_path):
     html = output_path.read_text(encoding="utf-8")
 
     assert '"updated_at": "2026-01-15"' in html
+
+
+# ---- 全文翻訳ページ ----
+
+def _write_translation(dir_path: Path, name: str, body: str) -> Path:
+    frontmatter = textwrap.dedent("""\
+        title: "テスト論文1（全文翻訳）"
+        original_title: "Test Paper 1"
+        citation: "Author A (2025) Test Paper 1. J1 1:1."
+        source_url: https://doi.org/10.0000/test
+        license: "CC BY 4.0"
+        translated_at: 2026-09-19
+        note: "本文のみを翻訳し、図表と文献リストは省略した。"
+        """)
+    return _write_note(dir_path, name, frontmatter, body)
+
+
+def test_generate_site_renders_full_translation_page_and_links_it(tmp_path):
+    _write_note(
+        tmp_path / "重要論文解説",
+        "論文——テスト.md",
+        'title: "テスト論文1"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
+        "\n## 概要\n\n本文1\n",
+    )
+    _write_translation(tmp_path / "全文翻訳", "論文——テスト.md", "\n## 要旨\n\n翻訳された本文\n")
+
+    generate_site(tmp_path)
+
+    page = tmp_path / "全文翻訳" / "論文——テスト.html"
+    assert page.is_file()
+    page_html = page.read_text(encoding="utf-8")
+    assert "テスト論文1（全文翻訳）" in page_html
+    assert "翻訳された本文" in page_html
+    assert "Test Paper 1" in page_html
+    assert "CC BY 4.0" in page_html
+    assert "https://doi.org/10.0000/test" in page_html
+    assert 'href="../index.html"' in page_html
+
+    index_html = (tmp_path / "index.html").read_text(encoding="utf-8")
+    from urllib.parse import quote
+    assert f'"translation_url": "{quote("全文翻訳/論文——テスト.html")}"' in index_html
+
+
+def test_generate_site_translation_url_empty_when_no_translation(tmp_path):
+    _write_note(
+        tmp_path / "重要論文解説",
+        "note1.md",
+        'title: "テスト論文1"\njournal: "J1"\nauthors: "A"\ntype: "原著研究"\ncategory: psychiatry\ntags: [精読]\n',
+        "\n## 概要\n\n本文1\n",
+    )
+
+    generate_site(tmp_path)
+
+    index_html = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert '"translation_url": ""' in index_html
+    assert not (tmp_path / "全文翻訳").exists()
+
+
+def test_build_html_renders_translation_link_in_list_and_detail():
+    html = build_html([_sample_article("a1", "記事タイトル1", "epigenetics")])
+
+    # 一覧: 見出しの直後に翻訳ありバッジ（translation_urlがある記事のみ）
+    assert "a.translation_url ?" in html
+    assert "本文の全文翻訳あり" in html
+    # 詳細: 目立つリンクボタン
+    assert "本文の全文翻訳を読む" in html
+    # 一覧の日付→タイトルの並びは従来通り
+    assert '<span class="date">${a.updated_at}</span> ${a.title}' in html
