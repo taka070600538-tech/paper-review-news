@@ -19,7 +19,7 @@ TRANSLATION_DIR = "全文翻訳"
 # TOPページ見出し直下に置くYouTubeへのリンク（URL, ラベル）。先頭が塗りつぶし、
 # 2つ目以降が枠線のみのボタンになる。リンクを増減するときはここを変更する。
 YOUTUBE_LINKS: list[tuple[str, str]] = [
-    ("https://youtu.be/fFUVwz6roM4", "解説動画を見る"),
+    ("https://youtu.be/Tt7ACmpjxTo", "解説動画を見る"),   # 2026-10-11 2本目「精神医学の巨人打線」に差し替え(1本目は youtu.be/fFUVwz6roM4)
     ("https://www.youtube.com/channel/UClHX4olutwCBTywPOpIKfKA", "YouTubeチャンネル"),
 ]
 
